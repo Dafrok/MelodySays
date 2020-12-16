@@ -1,0 +1,27 @@
+{
+  "name": "charsync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dafrok/charsync.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dafrok/charsync/issues"
+  },
+  "homepage": "https://github.com/Dafrok/charsync#readme",
+  "devDependencies": {
+    "body-parser": "^1.19.0",
+    "electron": "^11.1.0",
+    "express": "^4.17.1",
+    "lodash": "^4.17.20",
+    "node-static": "^0.7.11"
+  },
+  "dependencies": {}
+}

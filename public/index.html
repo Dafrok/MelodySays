@@ -1,0 +1,18 @@
+<textarea id="content">
+</textarea>
+<script src="./debouce.js"></script>
+<script>
+const $content = document.getElementById('content');
+const sendMessage = debounce(e => {
+  fetch('/record', {
+      method: 'POST',
+      body: e.target.value
+    }).then(res => {
+      $content.value = '';
+    });
+}, 1e3, {
+  leading: false,
+  trailing: true
+})
+$content.addEventListener('input', sendMessage)
+</script>
