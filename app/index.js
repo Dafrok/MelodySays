@@ -16,5 +16,8 @@ ipcRenderer.on('record', (event, message) => {
     const $item = document.createElement('li');
     $item.innerText = message;
     $list.appendChild($item);
-    $list.scrollTop = $list.scrollHeight;
+    $list.scrollTo({
+        top: $list.scrollHeight,
+        behavior: 'smooth'
+    });
 });

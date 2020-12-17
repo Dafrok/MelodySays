@@ -1,18 +1,20 @@
-<textarea id="content">
+<link rel="stylesheet" href="./index.css">
+<div id="placeholder">点击此处并打开百度手机输入法，打开语音输入，开启『长文本识别』后别开始讲话。</div>
+<textarea id="content" autofocus="true">
 </textarea>
 <script src="./debouce.js"></script>
 <script>
 const $content = document.getElementById('content');
 const sendMessage = debounce(e => {
-  fetch('/record', {
-      method: 'POST',
-      body: e.target.value
+    fetch('/record', {
+        method: 'POST',
+        body: e.target.value
     }).then(res => {
-      $content.value = '';
+        $content.value = '';
     });
-}, 1e3, {
-  leading: false,
-  trailing: true
-})
-$content.addEventListener('input', sendMessage)
+}, 5e2, {
+    leading: false,
+    trailing: true
+});
+$content.addEventListener('input', sendMessage);
 </script>
