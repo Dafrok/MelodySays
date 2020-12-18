@@ -4,6 +4,7 @@ html {
 html,
 body,
 ul,
+p,
 li {
     margin: 0;
     padding: 0;
@@ -17,61 +18,78 @@ li {
 #container {
     background: transparent;
     position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-#content {
-    padding: 20px;
-    background: rgba(255, 204, 255, .5);
-    box-sizing: border-box;
-    border-radius: 20px;
-    border: 3px solid #fff;
-    box-shadow: 0 0 3px #fcf;
-    color: #fff;
-    text-shadow: 0 0 2px #666;
-    font-size: 24px;
-    overflow-y: auto;
-    position: absolute;
     top: 3px;
     bottom: 3px;
     left: 3px;
     right: 3px;
+    color: #fff;
+    text-shadow: 0 0 2px #333;
+    line-height: 1.5;
 }
-
-#close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-}
-
-.close {
-    cursor: pointer;
-    position: absolute;
-    right: 32px;
-    top: 32px;
-    width: 32px;
-    height: 32px;
-    border-radius: 100%;
-}
-.close:hover {
-    opacity: 1;
-}
-.close:before,
-.close:after {
-    position: absolute;
-    left: 15px;
-    font-size: 0;
-    content: " ";
-    height: 33px;
-    width: 2px;
+#name,
+#name-shadow {
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 20px;
+    /* background-color: rgba(255, 204, 255, .7); */
     background-color: #fff;
+    border-radius: 20px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 20px;
+    position: fixed;
+    z-index: 1;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;  
 }
-.close:before {
-    transform: rotate(45deg);
+
+#name-shadow {
+    /* height: 20px; */
+    z-index: 0;
+    box-shadow: 0 0 3px #fcf;
 }
-.close:after {
-    transform: rotate(-45deg);
+#content {
+    padding: 20px;
+    background-color: rgba(255, 204, 255, .85);
+    background-image: url(./bg.png);
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: auto 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border-top-left-radius: 0;
+    border: 3px solid #fff;
+    box-shadow: 0 0 3px #fcf;
+    font-size: 24px;
+    overflow-y: auto;
+    position: absolute;
+    top: 20px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    line-height: 1.5;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+}
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+}
+.menu-btn {
+    background-color: rgba(255, 204, 255, 1);
+    text-shadow: none;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    box-shadow: 0 0 3px #fcf;
+    display: inline-block;
 }

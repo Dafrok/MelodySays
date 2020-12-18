@@ -22,10 +22,14 @@ function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 600,
         height: 180,
-        'min-height': 180,
-        'min-width': 600,
+        minHeight: 180,
+        maxHeight: 180,
+        minWidth: 500,
         frame: false,
         transparent: true,
+        alwaysOnTop: true,
+        maximizable: false,
+        hasShadow: false,
         webPreferences: {
             nodeIntegration: true
             // preload: path.join(__dirname, './app/index.js')
@@ -35,6 +39,11 @@ function createWindow() {
     // and load the index.html of the app.
     mainWindow.setMenu(null);
     mainWindow.loadFile('app/index.html');
+
+    ipcMain.on('re-render', () => {
+        mainWindow.loadFile('app/index.html');
+    });
+
     return mainWindow;
 }
 
@@ -52,3 +61,4 @@ app.on('window-all-closed', function () {
         app.quit();
     }
 });
+
