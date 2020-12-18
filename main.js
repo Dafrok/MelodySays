@@ -1,6 +1,7 @@
 require('./server.js');
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
+const { env } = require('process');
 
 // development
 // if (process.env.NODE_ENV === 'development') {
@@ -38,11 +39,15 @@ function createWindow() {
 
     // and load the index.html of the app.
     mainWindow.setMenu(null);
-    mainWindow.loadFile('app/index.html');
 
-    ipcMain.on('re-render', () => {
-        mainWindow.loadFile('app/index.html');
-    });
+    function openWindow() {
+      mainWindow.loadFile('app/index.html');
+      if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools();
+      }
+    }
+    openWindow();
+    ipcMain.on('re-render', openWindow);
 
     return mainWindow;
 }
