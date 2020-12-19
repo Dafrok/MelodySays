@@ -61,7 +61,8 @@ class App extends san.Component {
         </div>
     </div>
     <div class="menu">
-        <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
+    <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
+    <a class="menu-btn" on-click="minimize"><i class="fa fa-minus"></i></a>
         <a class="menu-btn" on-click="quit"><i class="fa fa-times"></i></a>
     </div>
     <div class="menu-shadow">
@@ -77,6 +78,9 @@ class App extends san.Component {
         else {
             alert('复制失败')
         };
+    }
+    minimize() {
+        ipcRenderer.send('minimize');
     }
     quit() {
         if (confirm('拜拜~')) {
@@ -113,12 +117,13 @@ class App extends san.Component {
             }
             content.push(['']);
             this.data.set('content', content.concat());
-            $content.scrollTop = $content.scrollTop - 24;
+            // $content.scrollTop = $content.scrollTop - 24;
         }
-        requestAnimationFrame(() => $content.scrollTo({
+        $content && requestAnimationFrame(() => $content.scrollTo({
             top: $content.scrollHeight - 1,
             behavior: 'smooth'
         }));
+        await sleep(1e2);
         return this.outputText();
     }
     toggleSetting() {

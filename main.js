@@ -3,6 +3,7 @@ const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
 const { env } = require('process');
 
+let mainWindow = null;
 // development
 // if (process.env.NODE_ENV === 'development') {
 //     require('electron-watch')(
@@ -14,13 +15,14 @@ const { env } = require('process');
 // }
 
 ipcMain.on('close', app.quit);
+ipcMain.on('minimize', () => mainWindow.minimize());
 
-let mainWindow = null;
 exports.getWindow = () => mainWindow;
 
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
+        icon: path.resolve(__dirname, './app/bg.png'),
         width: 600,
         height: 180,
         minHeight: 180,
