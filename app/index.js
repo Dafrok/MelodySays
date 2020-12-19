@@ -144,7 +144,7 @@ class App extends san.Component {
             content: [['']],
             ip: [],
             name: name || 'My Melody',
-            showSetting: true
+            showSetting: false
         };
     }
 }
