@@ -6,7 +6,7 @@
 const {ipcRenderer} = require('electron');
 const fs = require('fs');
 const path = require('path');
-const myip = require('quick-local-ip');
+const clipIt = require('./clip-it');
 
 var ni = require('os').networkInterfaces();
 function getLocalIp() {
@@ -14,7 +14,7 @@ function getLocalIp() {
     for (var key in ni) {
         for (var index in ni[key]) {
             if (ni[key][index].family === 'IPv4' && !ni[key][index].internal) {
-                ipAddress.push(ni[key][index]);
+                ipAddress.unshift(ni[key][index]);
             }
         }
     }
@@ -36,7 +36,24 @@ class App extends san.Component {
     <div class="background"></div>
     <div id="name">{{name}}</div>
     <div id="name-shadow">{{name}}</div>
-    <div id="content">
+    <div id="setting" s-if="showSetting">
+        <form>
+            <div class="field">
+                <label>名字</label>
+                <input value="{= name =}">
+            </div>
+            <div class="field">
+                <label>本地IP</label>
+                <div class="static">
+                    <p>在下列地址中复制复制并发送到同一局域网下的手机中用浏览器打开（有效地址通常为 192.168.0 或 192.168.1 开头）</p>
+                    <ul>
+                        <li s-for="item in ip"><a on-click="copyText(item.address + ':3080')">{{item.address}}:3080 <i class="fa fa-copy"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="content" s-else>
         <div id="content-inner" class="inner">
             <p s-for="paragraph in content">
                 {{paragraph}}
@@ -44,7 +61,7 @@ class App extends san.Component {
         </div>
     </div>
     <div class="menu">
-        <a class="menu-btn" on-click="getIp"><i class="fa fa-wrench"></i></a>
+        <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
         <a class="menu-btn" on-click="quit"><i class="fa fa-times"></i></a>
     </div>
     <div class="menu-shadow">
@@ -53,6 +70,14 @@ class App extends san.Component {
     </div>
 </div>
     `;
+    copyText(str) {
+        if (clipIt(str)) {
+            alert(`"${str}" 复制成功`);
+        }
+        else {
+            alert('复制失败')
+        };
+    }
     quit() {
         if (confirm('拜拜~')) {
             ipcRenderer.send('close');
@@ -60,8 +85,6 @@ class App extends san.Component {
     }
     getIp() {
         this.data.set('ip', getLocalIp());
-        // console.log(getLocalIp())
-        // alert(getLocalIp() + ':3080');
     }
     changeName() {
         prompt('My Melody');
@@ -98,6 +121,9 @@ class App extends san.Component {
         await sleep(1e2);
         return this.outputText();
     }
+    toggleSetting() {
+        this.data.set('showSetting', !this.data.get('showSetting'));
+    }
     attached() {
         this.getIp();
         this.textQueue = [];
@@ -110,7 +136,8 @@ class App extends san.Component {
         return {
             content: [['']],
             ip: [],
-            name: 'My Melody'
+            name: 'My Melody',
+            showSetting: true
         };
     }
 }

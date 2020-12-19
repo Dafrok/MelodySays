@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #fcf;
+    --primary-color: #c9c;
     --shadow-color: #333;
     -webkit-user-select: none;
 }
@@ -56,12 +56,8 @@ li {
     z-index: -1;
     box-shadow: 0 0 3px var(--shadow-color);
 }
-#content {
-    /* background-color: rgba(255, 204, 255, .85);
-    background-image: url(./bg.png);
-    background-repeat: no-repeat;
-    background-position: bottom right;
-    background-size: auto 100%; */
+#content,
+#setting {
     box-sizing: border-box;
     box-shadow: 0 0 3px var(--shadow-color);
     font-size: 24px;
@@ -69,6 +65,7 @@ li {
     line-height: 1.5;
 }
 #content,
+#setting,
 .background {
     padding: 20px;
     position: absolute;
@@ -86,6 +83,55 @@ li {
     background-repeat: no-repeat;
     background-position: bottom right;
     background-size: auto 100%;
+}
+#setting {
+    font-size: 16px;
+    padding-right: 120px;
+}
+#setting .field {
+    display: flex;
+    margin-top: 10px;
+}
+#setting .static {
+    font-size: 14px;
+    padding: 3px 0;
+}
+#setting .static a {
+    text-decoration: underline;
+}
+#setting label {
+    width: 50px;
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 16px;
+    height: 16px;
+    justify-content: flex-end;
+    line-height: 1.5;
+    padding: 7px 15px;
+    position: relative;
+    vertical-align: top;
+    text-size-adjust: 100%;
+}
+#setting label + * {
+    flex: 1;
+}
+#setting input {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 16px;
+    height: 16px;
+    justify-content: flex-start;
+    line-height: 1.5;
+    padding: 7px 15px;
+    position: relative;
+    vertical-align: top;
+    text-size-adjust: 100%;
 }
 .menu,
 .menu-shadow {
