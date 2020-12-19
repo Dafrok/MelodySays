@@ -105,6 +105,7 @@ class App extends san.Component {
         const char = this.textQueue.shift();
         const line = content[content.length - 1] + char;
         this.data.set(`content[${content.length - 1}]`, line);
+        const $content = document.getElementById('content-inner');
         if (/[。！？.!?]/.test(char)) {
             const content = this.data.get('content');
             if (content.length > 5) {
@@ -112,13 +113,12 @@ class App extends san.Component {
             }
             content.push(['']);
             this.data.set('content', content.concat());
+            $content.scrollTop = $content.scrollTop - 24;
         }
-        const $content = document.getElementById('content-inner');
-        $content.scrollTo({
-            top: $content.scrollHeight,
+        requestAnimationFrame(() => $content.scrollTo({
+            top: $content.scrollHeight - 1,
             behavior: 'smooth'
-        });
-        await sleep(1e2);
+        }));
         return this.outputText();
     }
     toggleSetting() {
