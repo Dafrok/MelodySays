@@ -76,7 +76,7 @@ class App extends san.Component {
             alert(`"${str}" 复制成功`);
         }
         else {
-            alert('复制失败')
+            alert('复制失败');
         };
     }
     minimize() {
@@ -84,6 +84,7 @@ class App extends san.Component {
     }
     quit() {
         if (confirm('拜拜~')) {
+            localStorage.setItem('username', this.data.get('name'));
             ipcRenderer.send('close');
         }
     }
@@ -138,16 +139,17 @@ class App extends san.Component {
         });
     }
     initData() {
+        const name = localStorage.getItem('username');
         return {
             content: [['']],
             ip: [],
-            name: 'My Melody',
+            name: name || 'My Melody',
             showSetting: true
         };
     }
 }
 
-var app = new App();
+const app = new App();
 app.attach(document.body);
 
 (async () => {
