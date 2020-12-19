@@ -1,3 +1,7 @@
+
+<meta charset="utf-8">
+<title>textsync</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="./index.css">
 <div id="placeholder">点击此处并打开百度手机输入法，打开语音输入，开启『长文本识别』后别开始讲话。</div>
 <textarea id="content" autofocus="true">
@@ -5,14 +9,43 @@
 <script src="./debouce.js"></script>
 <script>
 const $content = document.getElementById('content');
+function splitContent(str) {
+    let inputingPart = '';
+    let restPart = '';
+    for (let i = str.length - 1; i >= 0; i--) {
+        if (i === str.length - 1) {
+            inputingPart = str[i] + inputingPart;
+            continue;
+        }
+        if (/[。！？.!?]/.test(str[i])) {
+            restPart = str[i] + restPart;
+        }
+        else if (restPart) {
+            restPart = str[i] + restPart;
+        }
+        else {
+            inputingPart = str[i] + inputingPart;
+        }
+    }
+    return [restPart, inputingPart];
+}
 const sendMessage = debounce(e => {
-    fetch('/record', {
+    const [restPart, inputingPart] = splitContent(e.target.value);
+    restPart && fetch('/record', {
         method: 'POST',
-        body: e.target.value
+        body: restPart
     }).then(res => {
-        $content.value = '';
+        $content.value = inputingPart;
     });
-}, 1e3, {
+    setTimeout(() => {
+        inputingPart === $content.value && fetch('/record', {
+            method: 'POST',
+            body: inputingPart
+        }).then(res => {
+            $content.value = '';
+        });
+    }, 2e3);
+}, 5e2, {
     leading: false,
     trailing: true
 });
