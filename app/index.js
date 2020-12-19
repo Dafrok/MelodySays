@@ -26,6 +26,10 @@ function getLocalIp() {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class App extends san.Component {
     static template = `
 <div id="container">
@@ -34,12 +38,9 @@ class App extends san.Component {
     <div id="name-shadow">{{name}}</div>
     <div id="content">
         <div id="content-inner" class="inner">
-            <p>测试</p>
-            <p>测试</p>
-            <p>测试</p>
-            <p>测试</p>
-            <p>测试</p>
-            <p>测试</p>
+            <p s-for="paragraph in content">
+                {{paragraph}}
+            </p>
         </div>
     </div>
     <div class="menu">
@@ -65,22 +66,49 @@ class App extends san.Component {
     changeName() {
         prompt('My Melody');
     }
+    async startOutputTextQueue() {
+        if (this.outputing) {
+            return;
+        }
+        this.outputing = true;
+        await this.outputText();
+        this.outputing = false;
+    }
+    async outputText() {
+        if (!this.textQueue.length) {
+            return;
+        }
+        const content = this.data.get('content');
+        const char = this.textQueue.shift();
+        const line = content[content.length - 1] + char;
+        this.data.set(`content[${content.length - 1}]`, line);
+        if (/[。！？.!?]/.test(char)) {
+            const content = this.data.get('content');
+            if (content.length > 5) {
+                content.shift();
+            }
+            content.push(['']);
+            this.data.set('content', content.concat());
+        }
+        const $content = document.getElementById('content-inner');
+        $content.scrollTo({
+            top: $content.scrollHeight,
+            behavior: 'smooth'
+        });
+        await sleep(1e2);
+        return this.outputText();
+    }
     attached() {
         this.getIp();
-        const $list = document.getElementById('content-inner');
-        ipcRenderer.on('record', (event, message) => {
-            console.log('#', message)
-            const $item = document.createElement('p');
-            $item.innerText = message;
-            $list.appendChild($item);
-            $list.scrollTo({
-                top: $list.scrollHeight,
-                behavior: 'smooth'
-            });
+        this.textQueue = [];
+        ipcRenderer.on('record', (e, message) => {
+            this.textQueue.push(...message);
+            this.startOutputTextQueue();
         });
     }
     initData() {
         return {
+            content: [['']],
             ip: [],
             name: 'My Melody'
         };
