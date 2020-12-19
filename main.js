@@ -4,15 +4,6 @@ const path = require('path');
 const { env } = require('process');
 
 let mainWindow = null;
-// development
-// if (process.env.NODE_ENV === 'development') {
-//     require('electron-watch')(
-//         __dirname,
-//         'dev',
-//         path.join(__dirname, './'),
-//         2000 // debounce delay
-//     );
-// }
 
 ipcMain.on('close', app.quit);
 ipcMain.on('minimize', () => mainWindow.minimize());
@@ -35,7 +26,6 @@ function createWindow() {
         hasShadow: false,
         webPreferences: {
             nodeIntegration: true
-            // preload: path.join(__dirname, './app/index.js')
         }
     });
 
