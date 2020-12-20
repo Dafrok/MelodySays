@@ -35,6 +35,7 @@ li {
 }
 #name,
 #name-shadow {
+    font-weight: bold;
     display: inline-block;
     height: 40px;
     line-height: 40px;
@@ -170,4 +171,42 @@ li {
     height: 110px;
     overflow-y: auto;
     width: calc(100% - 100px);
+}
+
+.next {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-top-color: #fff;
+    border-bottom-width: 0;
+    animation: waiting 1.5s linear infinite;
+    opacity: 1;
+    transition: all .3s;
+}
+
+.hidden {
+    opacity: 0;
+}
+
+@keyframes waiting {
+    0% {
+        transform: translateY(-50%);
+    }
+    25% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(50%);
+    }
+    75% {
+        transform: translateY(0) rotateY(0);
+    }
+    100% {
+        transform: translateY(-50%) rotateY(360deg);
+    }
 }

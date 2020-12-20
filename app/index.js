@@ -61,14 +61,16 @@ class App extends san.Component {
         </div>
     </div>
     <div class="menu">
-    <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
-    <a class="menu-btn" on-click="minimize"><i class="fa fa-minus"></i></a>
+        <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
+        <a class="menu-btn" on-click="minimize"><i class="fa fa-minus"></i></a>
         <a class="menu-btn" on-click="quit"><i class="fa fa-times"></i></a>
     </div>
     <div class="menu-shadow">
         <a class="menu-btn"><i class="fa fa-wrench"></i></a>
+        <a class="menu-btn"><i class="fa fa-minus"></i></a>
         <a class="menu-btn"><i class="fa fa-times"></i></a>
     </div>
+    <div class="{{!outputing && content.length > 1 ? '' : 'hidden'}} next"></div>
 </div>
     `;
     copyText(str) {
@@ -95,12 +97,17 @@ class App extends san.Component {
         prompt('My Melody');
     }
     async startOutputTextQueue() {
-        if (this.outputing) {
+        if (this.data.get('outputing')) {
             return;
         }
-        this.outputing = true;
+        this.data.set('outputing', true);
         await this.outputText();
-        this.outputing = false;
+        this.data.set('outputing', false);
+
+        const content = this.data.get('content');
+        if (content.length > 5) {
+            this.data.splice('content', [0, content.length - 5]);
+        }
     }
     async outputText() {
         if (!this.textQueue.length) {
@@ -112,13 +119,13 @@ class App extends san.Component {
         this.data.set(`content[${content.length - 1}]`, line);
         const $content = document.getElementById('content-inner');
         if (/[。！？.!?]/.test(char)) {
-            const content = this.data.get('content');
-            if (content.length > 5) {
-                content.shift();
-            }
-            content.push(['']);
-            this.data.set('content', content.concat());
-            // $content.scrollTop = $content.scrollTop - 24;
+            // const content = this.data.get('content');
+            this.data.push('content', ['']);
+            // if (content.length > 5) {
+            //     content.shift();
+            // }
+            // content.push(['']);
+            // this.data.set('content', content.concat());
         }
         $content && requestAnimationFrame(() => $content.scrollTo({
             top: $content.scrollHeight - 1,
@@ -144,7 +151,8 @@ class App extends san.Component {
             content: [['']],
             ip: [],
             name: name || 'My Melody',
-            showSetting: false
+            showSetting: false,
+            outputing: false
         };
     }
 }
