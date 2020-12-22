@@ -32,7 +32,7 @@ function sleep(ms) {
 
 class App extends san.Component {
     static template = `
-<div id="container">
+<div id="container" class="{{noBorderMode ? 'no-border-mode' : ''}}">
     <div class="background"></div>
     <div id="name">{{name}}</div>
     <div id="name-shadow">{{name}}</div>
@@ -41,6 +41,12 @@ class App extends san.Component {
             <div class="field">
                 <label>名字</label>
                 <input value="{= name =}">
+            </div>
+            <div class="field">
+                <label>无边框</label>
+                <div class="form-control">
+                    <input type="checkbox" checked="{= noBorderMode =}">
+                </div>
             </div>
             <div class="field">
                 <label>本地IP</label>
@@ -55,17 +61,23 @@ class App extends san.Component {
     </div>
     <div id="content" s-else>
         <div id="content-inner" class="inner">
+        <p>测试</p>
+        <p>测试</p>
+        <p>测试</p>
+        <p>测试</p>
             <p s-for="paragraph in content">
                 {{paragraph}}
             </p>
         </div>
     </div>
     <div class="menu">
+        <span class="rest"></span>
         <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
         <a class="menu-btn" on-click="minimize"><i class="fa fa-minus"></i></a>
         <a class="menu-btn" on-click="quit"><i class="fa fa-times"></i></a>
     </div>
     <div class="menu-shadow">
+        <span class="rest"></span>
         <a class="menu-btn"><i class="fa fa-wrench"></i></a>
         <a class="menu-btn"><i class="fa fa-minus"></i></a>
         <a class="menu-btn"><i class="fa fa-times"></i></a>
@@ -87,6 +99,7 @@ class App extends san.Component {
     quit() {
         if (confirm('拜拜~')) {
             localStorage.setItem('username', this.data.get('name'));
+            localStorage.setItem('noBorderMode', this.data.get('noBorderMode'));
             ipcRenderer.send('close');
         }
     }
@@ -147,12 +160,14 @@ class App extends san.Component {
     }
     initData() {
         const name = localStorage.getItem('username');
+        const noBorderMode = localStorage.getItem('noBorderMode');
         return {
             content: [['']],
             ip: [],
             name: name || 'My Melody',
             showSetting: false,
-            outputing: false
+            outputing: false,
+            noBorderMode
         };
     }
 }

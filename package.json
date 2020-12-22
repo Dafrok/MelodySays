@@ -20,8 +20,18 @@
     "url": "https://github.com/Dafrok/charsync/issues"
   },
   "build": {
+    "productName": "Melodic",
     "electronDownload": {
       "mirror": "https://npm.taobao.org/mirrors/electron/"
+    },
+    "win": {
+      "publisherName": "Dafrok",
+      "publish": [
+        "github"
+      ],
+      "target": [
+        "nsis"
+      ]
     }
   },
   "homepage": "https://github.com/Dafrok/charsync#readme",
