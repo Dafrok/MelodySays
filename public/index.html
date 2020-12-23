@@ -40,26 +40,37 @@ function matchGroups(before, after) {
 
 let processing = false;
 
+const sendLastMessage = debounce((e, inputingText) => {
+    if (inputingText === e.target.value) {
+        sendMessage(e)
+    }
+}, 2e3, {
+    leading: false,
+    trailing: true
+});
+
 const sendMessage = debounce(e => {
     if (processing) {
         return;
     }
-    console.log('#send prepare')
     const originParts = splitContent(e.target.value);
-    setTimeout(() => {
+    setTimeout(async () => {
         processing = true;
         const nowParts = splitContent(e.target.value);
         const [outputingText, inputingText] = matchGroups(originParts, nowParts);
         if (outputingText.length) {
-            fetch('/record', {
-                method: 'POST',
-                body: outputingText
-            }).then(res => {
+            try {
+                await fetch('/record', {
+                    method: 'POST',
+                    body: outputingText
+                });
                 $content.value = inputingText;
-                processing = false;
-            }).catch(e => {
-                processing = false;
-            });
+            }
+            catch (e) {
+                // PASS
+            }
+            processing = false;
+            inputingText && sendLastMessage(e, inputingText);
         }
         else {
             processing = false;
