@@ -61,10 +61,6 @@ class App extends san.Component {
     </div>
     <div id="content" s-else>
         <div id="content-inner" class="inner">
-        <p>测试</p>
-        <p>测试</p>
-        <p>测试</p>
-        <p>测试</p>
             <p s-for="paragraph in content">
                 {{paragraph}}
             </p>
