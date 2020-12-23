@@ -10,40 +10,60 @@
 <script>
 const $content = document.getElementById('content');
 function splitContent(str) {
-    let inputingPart = '';
-    let restPart = '';
-    for (let i = str.length - 1; i >= 0; i--) {
-        if (i === str.length - 1) {
-            inputingPart = str[i] + inputingPart;
-            continue;
-        }
+    const parts = [];
+    let interrupt = 0;
+    for (let i = interrupt; i < str.length ; i++) {
         if (/[。！？.!?]/.test(str[i])) {
-            restPart = str[i] + restPart;
+            parts.push(str.slice(interrupt, i + 1));
+            interrupt = i + 1;
         }
-        else if (restPart) {
-            restPart = str[i] + restPart;
-        }
-        else {
-            inputingPart = str[i] + inputingPart;
+        else if (i === str.length - 1) {
+            parts.push(str.slice(interrupt));
         }
     }
-    return [restPart, inputingPart];
+    return parts;
 }
+
+function matchGroups(before, after) {
+    let outputingText = '';
+    let inputingText = '';
+    for (let i = 0; i < after.length; i++) {
+        if (after[i] === before[i]) {
+            outputingText += after[i];
+        }
+        else {
+            inputingText += after[i];
+        }
+    }
+    return [outputingText, inputingText];
+}
+
+let processing = false;
+
 const sendMessage = debounce(e => {
-    const [restPart, inputingPart] = splitContent(e.target.value);
-    restPart && fetch('/record', {
-        method: 'POST',
-        body: restPart
-    }).then(res => {
-        $content.value = inputingPart;
-    });
+    if (processing) {
+        return;
+    }
+    console.log('#send prepare')
+    const originParts = splitContent(e.target.value);
     setTimeout(() => {
-        inputingPart === $content.value && fetch('/record', {
-            method: 'POST',
-            body: inputingPart
-        }).then(res => {
-            $content.value = '';
-        });
+        processing = true;
+        const nowParts = splitContent(e.target.value);
+        const [outputingText, inputingText] = matchGroups(originParts, nowParts);
+        if (outputingText.length) {
+            fetch('/record', {
+                method: 'POST',
+                body: outputingText
+            }).then(res => {
+                $content.value = inputingText;
+                processing = false;
+            }).catch(e => {
+                processing = false;
+            });
+        }
+        else {
+            processing = false;
+        } 
     }, 2e3);
 }, 5e2, {
     leading: false,
