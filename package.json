@@ -2,7 +2,7 @@
   "name": "melodic",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "./server/start.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/start.js",
     "start": "node server/start.js"
@@ -42,5 +42,8 @@
     "lodash": "^4.17.20",
     "socket.io": "^3.0.4",
     "socket.io-client": "^3.0.4"
+  },
+  "engines": {
+    "node": "12.x"
   }
 }
