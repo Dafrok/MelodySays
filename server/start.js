@@ -1,16 +1,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const AV = require('leanengine');
+
+AV.init({
+    appId: process.env.LEANCLOUD_APP_ID,
+    appKey: process.env.LEANCLOUD_APP_KEY,
+    masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
+});
+
+AV.Cloud.useMasterKey();
 
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 3000);
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 const publicPath = path.resolve(__dirname, '../client');
 
+app.enable('trust proxy');
 app.set('public', publicPath);
+app.use(AV.express());
 app.use(express.static(publicPath));
 app.use(bodyParser.text());
 
