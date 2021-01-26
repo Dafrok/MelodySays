@@ -6,16 +6,9 @@
 <div id="placeholder">点击此处并打开百度手机输入法，打开语音输入，开启『长文本识别』后别开始讲话。</div>
 <textarea id="content" autofocus="true">
 </textarea>
-<script src="../vendor/socket.io.min.js"></script>
 <script src="./debouce.js"></script>
 <script>
-const socket = io();
-socket.on('connect', function () {
-    console.log('connected');
-});
-
 const $content = document.getElementById('content');
-
 function splitContent(str) {
     const parts = [];
     let interrupt = 0;
@@ -67,7 +60,10 @@ const sendMessage = debounce(e => {
         const [outputingText, inputingText] = matchGroups(originParts, nowParts);
         if (outputingText.length) {
             try {
-                socket.emit('record', outputingText);
+                await fetch('/record', {
+                    method: 'POST',
+                    body: outputingText
+                });
                 $content.value = inputingText;
             }
             catch (e) {
@@ -78,7 +74,7 @@ const sendMessage = debounce(e => {
         }
         else {
             processing = false;
-        }
+        } 
     }, 2e3);
 }, 5e2, {
     leading: false,
