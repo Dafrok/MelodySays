@@ -118,9 +118,21 @@ li {
     overflow-y: auto;
     line-height: 1.5;
 }
+#white-board {
+    outline: 0;
+    opacity: 0;
+    caret-color: transparent;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
 #content,
 #setting,
 .background {
+    outline: none;
     transition: all .2s;
     padding: 20px;
     position: absolute;
@@ -227,7 +239,10 @@ li {
 .menu-btn:hover {
     transform: scale(1.1);
 }
-
+.menu-btn.active {
+    color: var(--primary-color);
+    background: #fff;
+}
 #content-inner {
     height: 110px;
     overflow-y: auto;

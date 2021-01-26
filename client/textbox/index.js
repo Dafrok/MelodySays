@@ -36,13 +36,17 @@ class App extends san.Component {
     </div>
     <div class="menu">
         <span class="rest"></span>
-        <a class="menu-btn" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
+        <a class="menu-btn {{showWhiteBoard ? 'active' : ''}}" on-click="toggleWhiteBoard"><i class="fa fa-pencil"></i></a>
+        <a class="menu-btn {{showSetting ? 'active' : ''}}" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
     </div>
     <div class="menu-shadow">
         <span class="rest"></span>
+        <a class="menu-btn"><i class="fa fa-pencil"></i></a>
         <a class="menu-btn"><i class="fa fa-wrench"></i></a>
     </div>
     <div class="{{!outputing && content.length > 1 ? '' : 'hidden'}} next"></div>
+    <div id="white-board" s-ref="white-board" s-if="showWhiteBoard" on-paste="onPaste" contenteditable="true">
+    </div>
 </div>
     `;
     changeName() {
@@ -70,7 +74,7 @@ class App extends san.Component {
         const line = content[content.length - 1] + char;
         this.data.set(`content[${content.length - 1}]`, line);
         const $content = document.getElementById('content-inner');
-        if (/[。！？.!?]/.test(char)) {
+        if (/[。！？.!?\n]/.test(char)) {
             // const content = this.data.get('content');
             this.data.push('content', ['']);
             // if (content.length > 5) {
@@ -86,8 +90,29 @@ class App extends san.Component {
         await sleep(1e2);
         return this.outputText();
     }
+    toggleWhiteBoard() {
+        const nextState = !this.data.get('showWhiteBoard');
+        this.data.set('showWhiteBoard', nextState);
+        if (nextState) {
+            this.nextTick(() => this.ref('white-board').focus());
+        }
+        this.data.set('showSetting', false);
+    }
     toggleSetting() {
         this.data.set('showSetting', !this.data.get('showSetting'));
+        this.data.set('showWhiteBoard', false);
+    }
+    onPaste(e) {
+        e.preventDefault();
+        this.ref('white-board').blur();
+        const text = e.clipboardData.getData('text').split(/[\n\r]/).filter(i => i);
+        this.data.set('content', text);
+        this.data.set('showWhiteBoard', false);
+        const $content = e.currentTarget;
+        requestAnimationFrame(() => $content.scrollTo({
+            top: $content.scrollHeight - 1,
+            behavior: 'smooth'
+        }));
     }
     attached() {
         this.textQueue = [];
