@@ -75,7 +75,7 @@ li {
     transform: scale(1);
 }
 #container {
-    height: 160px;
+    height: 180px;
     background: transparent;
     position: fixed;
     bottom: 3px;
