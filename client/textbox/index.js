@@ -20,6 +20,12 @@ class App extends san.Component {
                 <input value="{= name =}">
             </div>
             <div class="field">
+                <label>密钥</label>
+                <div class="form-control">
+                    <input type="password" value="{= secret =}">
+                </div>
+            </div>
+            <div class="field">
                 <label>无边框</label>
                 <div class="form-control">
                     <input type="checkbox" checked="{= noBorderMode =}">
@@ -37,11 +43,13 @@ class App extends san.Component {
     <div class="menu">
         <span class="rest"></span>
         <a class="menu-btn {{showWhiteBoard ? 'active' : ''}}" on-click="toggleWhiteBoard"><i class="fa fa-pencil"></i></a>
+        <a class="menu-btn {{recording ? 'active' : ''}}" on-click="toggleRecord"><i class="fa fa-{{ waitingForRecord ? 'spinner fa-spin' : recording ? 'stop' : 'play'}}"></i></a>
         <a class="menu-btn {{showSetting ? 'active' : ''}}" on-click="toggleSetting"><i class="fa fa-wrench"></i></a>
     </div>
     <div class="menu-shadow">
         <span class="rest"></span>
         <a class="menu-btn"><i class="fa fa-pencil"></i></a>
+        <a class="menu-btn"><i class="fa fa-{{waitingForRecord ? 'spinner fa-spin' : recording ? 'stop' : 'play'}}"></i></a>
         <a class="menu-btn"><i class="fa fa-wrench"></i></a>
     </div>
     <div class="{{!outputing && content.length > 1 ? '' : 'hidden'}} next"></div>
@@ -49,9 +57,6 @@ class App extends san.Component {
     </div>
 </div>
     `;
-    changeName() {
-        prompt('My Melody');
-    }
     async startOutputTextQueue() {
         if (this.data.get('outputing')) {
             return;
@@ -99,7 +104,13 @@ class App extends san.Component {
         this.data.set('showSetting', false);
     }
     toggleSetting() {
-        this.data.set('showSetting', !this.data.get('showSetting'));
+        const showSetting = this.data.get('showSetting');
+        if (showSetting) {
+            localStorage.setItem('username', this.data.get('name'));
+            localStorage.setItem('secret', this.data.get('secret'));
+            localStorage.setItem('noBorderMode', this.data.get('noBorderMode'));
+        }
+        this.data.set('showSetting', !showSetting);
         this.data.set('showWhiteBoard', false);
     }
     onPaste(e) {
@@ -114,23 +125,99 @@ class App extends san.Component {
             behavior: 'smooth'
         }));
     }
+    toggleRecord() {
+        const recording = this.data.get('recording');
+        const waitingForRecord = this.data.get('waitingForRecord');
+        if (waitingForRecord) {
+            return;
+        }
+        this.data.set('waitingForRecord', true);
+        if (recording) {
+            this.recognizer.stopContinuousRecognitionAsync(() => {
+                this.data.set('waitingForRecord', false);
+                this.data.set('recording', false);
+            });
+            return;
+        }
+
+        const secret = this.data.get('secret');
+
+        const speechConfig = SpeechSDK.SpeechTranslationConfig.fromSubscription(secret, 'japanwest');
+
+        speechConfig.speechRecognitionLanguage = 'zh-CN';
+        speechConfig.addTargetLanguage('zh-Hans');
+
+        const audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+        this.recognizer = new SpeechSDK.TranslationRecognizer(speechConfig, audioConfig);
+
+        const recognizer = this.recognizer;
+
+        recognizer.startContinuousRecognitionAsync(
+            () => {
+                this.data.set('waitingForRecord', false);
+                this.data.set('recording', true);
+            },
+            err => {
+                console.log(err);
+                this.data.set('waitingForRecord', true);
+                recognizer.stopContinuousRecognitionAsync(() => {
+                    this.data.set('waitingForRecord', false);
+                    this.data.set('recording', false);
+                    this.toggleRecord();
+                });
+            }
+        );
+        // recognizer.recognizing = (s, e) => {
+        //     console.log(`RECOGNIZING: Text=${e.result.text}`);
+        // };
+        
+        recognizer.recognized = (s, e) => {
+            if (e.result.reason == SpeechSDK.ResultReason.TranslatedSpeech) {
+                this.textQueue.push(...e.result.text);
+                this.startOutputTextQueue();
+            }
+            // else if (e.result.reason == SpeechSDK.ResultReason.NoMatch) {
+            //     console.log("NOMATCH: Speech could not be recognized.");
+            // }
+        };
+        recognizer.canceled = (s, e) => {
+            // console.log(`CANCELED: Reason=${e.reason}`);
+        
+            // if (e.reason == sdk.CancellationReason.Error) {
+            //     console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
+            //     console.log(`"CANCELED: ErrorDetails=${e.errorDetails}`);
+            //     console.log("CANCELED: Did you update the key and location/region info?");
+            // }
+            this.data.set('waitingForRecord', true);
+            recognizer.stopContinuousRecognitionAsync(() => {
+                this.data.set('recording', false);
+                this.data.set('waitingForRecord', true);
+            });
+        };
+    }
     attached() {
         this.textQueue = [];
+        /*
         const socket = io();
         socket.on('output', message => {
             this.textQueue.push(...message);
             this.startOutputTextQueue();
         });
+        */
     }
     initData() {
         const name = localStorage.getItem('username');
-        const noBorderMode = localStorage.getItem('noBorderMode');
+        const secret = localStorage.getItem('secret');
+        const noBorderModeStr = localStorage.getItem('noBorderMode');
+        const noBorderMode = typeof noBorderModeStr === 'string' ? JSON.parse(noBorderModeStr) : false;
+
         return {
             content: [['']],
             ip: [],
-            name: name || 'My Melody',
+            name: name || '美乐蒂',
             showSetting: false,
             outputing: false,
+            secret,
             noBorderMode
         };
     }
