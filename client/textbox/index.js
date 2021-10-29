@@ -127,8 +127,9 @@ class App extends san.Component {
     }
     toggleRecord() {
         const recording = this.data.get('recording');
+        const secret = this.data.get('secret');
         const waitingForRecord = this.data.get('waitingForRecord');
-        if (waitingForRecord) {
+        if (waitingForRecord || !secret) {
             return;
         }
         this.data.set('waitingForRecord', true);
@@ -140,8 +141,6 @@ class App extends san.Component {
             return;
         }
 
-        const secret = this.data.get('secret');
-
         const speechConfig = SpeechSDK.SpeechTranslationConfig.fromSubscription(secret, 'japanwest');
 
         speechConfig.speechRecognitionLanguage = 'zh-CN';
@@ -151,7 +150,6 @@ class App extends san.Component {
         this.recognizer = new SpeechSDK.TranslationRecognizer(speechConfig, audioConfig);
 
         const recognizer = this.recognizer;
-
         recognizer.startContinuousRecognitionAsync(
             () => {
                 this.data.set('waitingForRecord', false);
