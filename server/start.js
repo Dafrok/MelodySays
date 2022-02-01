@@ -16,10 +16,6 @@ AV.Cloud.useMasterKey();
 
 const octokit = new Octokit({ auth: process.env.KILL_MY_LOVE });
 
-const response = await octokit.request("GET /orgs/{org}/repos", {
-  org: "octokit",
-  type: "private",
-});
 const app = express();
 const port = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 3000);
 
