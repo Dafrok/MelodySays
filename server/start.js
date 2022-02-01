@@ -26,6 +26,13 @@ app.use(AV.express());
 app.use(express.static(publicPath));
 app.use(bodyParser.text());
 
+app.post('/api/killmylove', (req, res) => {
+    if (req.body === 'kill my love') {
+        res.ok();
+    }
+    res.end();
+})
+
 // io.on('connection', socket => {
 //     console.log('a user connected');
 //     socket.on('disconnect', () => {
