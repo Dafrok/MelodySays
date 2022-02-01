@@ -35,7 +35,11 @@ app.post('/api/killmylove', cors({
     optionsSuccessStatus: 200
 }), async (req, res) => {
     if (req.body === 'kill my love') {
-        const resp = await octokit.request('PATCH /repos/Dafrok/melody-with-piano/issues/1', {body: 'ME'});
+        const resp = await octokit.request('PATCH /repos/Dafrok/melody-with-piano/issues/1', {
+            owner: 'Dafrok',
+            repo: 'melody-with-piano',
+            state: 'closed'
+        });
         if (resp.status === 200) {
             res.send('killed');
         }
