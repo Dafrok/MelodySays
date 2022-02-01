@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const AV = require('leanengine');
+const cors = require('cors');
 
 AV.init({
     appId: process.env.LEANCLOUD_APP_ID,
@@ -26,9 +27,12 @@ app.use(AV.express());
 app.use(express.static(publicPath));
 app.use(bodyParser.text());
 
-app.post('/api/killmylove', (req, res) => {
+app.post('/api/killmylove', cors({
+    origin: 'https://sweet.dafrok.top',
+    optionsSuccessStatus: 200
+}), (req, res) => {
     if (req.body === 'kill my love') {
-        res.ok();
+        res.send('killed');
     }
     res.end();
 })
