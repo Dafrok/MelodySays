@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const AV = require('leanengine');
 const cors = require('cors');
+const { Octokit } = require("@octokit/core");
 
 AV.init({
     appId: process.env.LEANCLOUD_APP_ID,
@@ -13,6 +14,12 @@ AV.init({
 
 AV.Cloud.useMasterKey();
 
+const octokit = new Octokit({ auth: process.env.KILL_MY_LOVE });
+
+const response = await octokit.request("GET /orgs/{org}/repos", {
+  org: "octokit",
+  type: "private",
+});
 const app = express();
 const port = parseInt(process.env.LEANCLOUD_APP_PORT || process.env.PORT || 3000);
 
@@ -30,9 +37,12 @@ app.use(bodyParser.text());
 app.post('/api/killmylove', cors({
     origin: 'https://sweet.dafrok.top',
     optionsSuccessStatus: 200
-}), (req, res) => {
+}), async (req, res) => {
     if (req.body === 'kill my love') {
-        res.send('killed');
+        const resp = await octokit.request('PATCH /repos/Dafrok/melody-with-piano/issues/1', {body: 'ME'});
+        if (resp.status === 200) {
+            res.send('killed');
+        }
     }
     res.end();
 })
